@@ -1,0 +1,46 @@
+---
+- name: ensure epel repository is enabled
+  yum_repository:
+    name: CentOS-EPEL
+    description: EPEL Yum Repository
+    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    gpgkey: "http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+    gpgcheck: yes
+    enabled: yes
+  tags: [always]
+
+- name: install prerequisites for docker
+  yum:
+    name: '{{ centos_prerequisite }}'
+    state: latest
+  tags: [always]
+
+- name: purge centos repository docker packages
+  yum:
+    name: '{{ centos_standard_packages }}'
+    state: absent
+  tags: [install]
+
+- name: add docker official repository
+  yum_repository:
+    name: docker-ce-stable
+    file: docker-ce
+    description: Docker CE stable - $basearch
+    baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+    enabled: yes
+    gpgcheck: yes
+    gpgkey: https://download.docker.com/linux/centos/gpg
+  tags: [install]
+
+- name: install docker-ce package
+  yum:
+    name: "{{ centos_docker_packages }}"
+    state: latest
+  tags: [install,update]
+  register: dockerinstall
+
+- name: notify handlers
+  command: /bin/true
+  notify: restart Docker daemon
+  tags: [install,update]
+  when: (dockerinstall is succeeded) and (norestart != "1" or norestart is undefined)

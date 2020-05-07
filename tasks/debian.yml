@@ -1,0 +1,40 @@
+---
+- name: install prerequisites for docker
+  apt:
+    name: '{{ debian_prerequisite }}'
+    state: latest
+    dpkg_options: 'force-confold'
+  tags: [install]
+
+- name: purge debian repository docker packages
+  apt:
+    name: '{{ debian_standard_packages }}'
+    state: absent
+    dpkg_options: 'force-confold'
+  tags: [install]
+
+- name: add docker official apt signing key
+  apt_key:
+    url: '{{ debian_docker_gpg_key }}'
+    state: present
+  tags: [install]
+
+- name: add docker official repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_lsb.codename }} stable
+    state: present
+  tags: [install]
+
+- name: install docker-ce package
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: yes
+  tags: [install,update]
+  register: dockerinstall
+
+- name: notify handlers
+  command: /bin/true
+  notify: restart Docker daemon
+  tags: [install,update]
+  when: (dockerinstall is succeeded) and (norestart != "1" or norestart is undefined)

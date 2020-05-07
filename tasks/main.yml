@@ -1,0 +1,11 @@
+---
+- name: test os
+  import_tasks: testos.yml
+
+- name: go to debian
+  import_tasks: debian.yml
+  when: ansible_distribution == 'Debian'
+
+- name: go to centos
+  import_tasks: centos.yml
+  when: ansible_distribution == 'CentOS'

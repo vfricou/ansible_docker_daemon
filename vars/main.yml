@@ -1,0 +1,31 @@
+---
+debian_prerequisite:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg2
+  - software-properties-common
+debian_standard_packages:
+  - docker
+  - docker-engine
+  - docker.io
+debian_docker_gpg_key: "https://download.docker.com/linux/debian/gpg"
+centos_prerequisite:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2
+  - python-pip
+  - python-docker-py
+centos_standard_packages:
+  - docker
+  - docker-client
+  - docker-client-latest
+  - docker-common
+  - docker-latest
+  - docker-latest-logrotate
+  - docker-logrotate
+  - docker-engine
+centos_docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
